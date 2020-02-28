@@ -14,7 +14,7 @@ public class CranIndexer {
         this.docsPath = docsPath;
         this.queriesPath = queriesPath;
     }
-    public void createDocs() throws IOException {
+    public void writeDocs() throws IOException {
         InputStreamReader inputStreamReader = new InputStreamReader(getClass().getResourceAsStream(File.separator + "cran.all.1400"));
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String doc = bufferedReader.readLine();
@@ -32,7 +32,7 @@ public class CranIndexer {
         }
         bufferedReader.close();
     }
-    public void createQueries() throws IOException {
+    public void writeQueries() throws IOException {
         InputStreamReader inputStreamReader = new InputStreamReader(getClass().getResourceAsStream(File.separator + "cran.qry"));
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String query = bufferedReader.readLine();
@@ -50,7 +50,7 @@ public class CranIndexer {
         }
         bufferedReader.close();
     }
-    public CranDoc makeDoc(int id) throws IOException {
+    public CranDoc parseDoc(int id) throws IOException {
         FileReader fileReader = new FileReader(new File(docsPath + File.separator + "cran.doc." + id));
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String doc = bufferedReader.readLine();
@@ -58,7 +58,7 @@ public class CranIndexer {
         StringBuilder title = new StringBuilder();
         StringBuilder authors = new StringBuilder();
         StringBuilder department = new StringBuilder();
-        StringBuilder abstr = new StringBuilder();
+        StringBuilder content = new StringBuilder();
         while (doc != null) {
             switch (doc) {
                 case ".T":
@@ -85,7 +85,7 @@ public class CranIndexer {
                 case ".W":
                     doc = bufferedReader.readLine();
                     while (doc != null) {
-                        abstr.append(doc).append("\n");
+                        content.append(doc).append("\n");
                         doc = bufferedReader.readLine();
                     }
                     break;
@@ -95,21 +95,21 @@ public class CranIndexer {
         }
         bufferedReader.close();
         String currentId = Integer.toString(id);
-        return new CranDoc(currentId, title.toString(), authors.toString(), department.toString(), abstr.toString());
+        return new CranDoc(currentId, title.toString(), authors.toString(), department.toString(), content.toString());
     }
-    public CranQuery makeQuery(int id) throws IOException {
+    public CranQuery parseQuery(int id) throws IOException {
         FileReader fileReader = new FileReader(new File(queriesPath + File.separator + "cran.qry." + id));
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String query = bufferedReader.readLine();
         query = bufferedReader.readLine();
         query = bufferedReader.readLine();
-        StringBuilder abstr = new StringBuilder();
+        StringBuilder text = new StringBuilder();
         while (query != null) {
-            abstr.append(query).append("\n");
+            text.append(query).append("\n");
             query = bufferedReader.readLine();
         }
         bufferedReader.close();
         String currentId = Integer.toString(id);
-        return new CranQuery(currentId, abstr.toString());
+        return new CranQuery(currentId, text.toString());
     }
 }

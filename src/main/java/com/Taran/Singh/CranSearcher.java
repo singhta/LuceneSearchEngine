@@ -22,28 +22,28 @@ public class CranSearcher {
 
         searchEngine.open();
 
-        cranIndexer.createDocs();
+        cranIndexer.writeDocs();
         File docsDir = new File(DOCS_PATH);
         File[] filesDoc = docsDir.listFiles();
         int i = 0;
         for (File file : Objects.requireNonNull(filesDoc)) {
             if (file.isFile() && !file.getPath().endsWith(".gitkeep")) {
-                searchEngine.addDocument(cranIndexer.makeDoc(++i));
+                searchEngine.addDocument(cranIndexer.parseDoc(++i));
             }
         }
 
         searchEngine.close();
 
-        cranIndexer.createQueries();
+        cranIndexer.writeQueries();
 
         File queryDir = new File(QUERIES_PATH);
         File[] filesQuery = queryDir.listFiles();
         FileWriter resultSet = new FileWriter(CRAN_PATH + File.separator + "results");
         int j = 1;
         while (j < Objects.requireNonNull(filesQuery).length) {
-            CranQuery query = cranIndexer.makeQuery(j++);
+            CranQuery query = cranIndexer.parseQuery(j++);
             String result = "";
-            String queryString = query.getAbstr();
+            String queryString = query.getText();
             ArrayList<SearchResult> resultList = searchEngine.search(queryString);
             for (SearchResult currentResult : resultList) {
                 resultSet.append(query.getID()).append(" 0 ").append(currentResult.getID());

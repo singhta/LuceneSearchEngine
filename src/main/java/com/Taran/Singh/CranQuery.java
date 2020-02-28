@@ -4,11 +4,11 @@ public class CranQuery {
 
 
     private String id;
-    private String abstr;
+    private String text;
 
-    public CranQuery(String id, String abstr) {
+    public CranQuery(String id, String text) {
         this.id = id;
-        this.abstr = abstr;
+        this.text = text;
     }
 
 
@@ -17,8 +17,8 @@ public class CranQuery {
     }
 
 
-    public String getAbstr() {
-        return abstr;
+    public String getText() {
+        return text;
     }
 
 

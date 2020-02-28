@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
@@ -54,11 +55,12 @@ public class SearchEngine {
     }
 
     public void open() throws IOException {
-    	//Analyzer analyzer = new Analyzer(getStopWordSet());
-    	EnglishAnalyzer analyzer = new EnglishAnalyzer(getStopWordSet());
+    	Analyzer analyzer = new Analyzer(getStopWordSet());
+    	//StandardAnalyzer analyzer = new StandardAnalyzer(getStopWordSet());
+    	//EnglishAnalyzer analyzer = new EnglishAnalyzer(getStopWordSet());
         Similarity similarity[] = {
-                new BM25Similarity(),
-                new ClassicSimilarity()
+                new BM25Similarity()
+                //new ClassicSimilarity()
         };
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
@@ -82,9 +84,15 @@ public class SearchEngine {
     public ArrayList<SearchResult> search(String cranQuery) throws IOException, ParseException {
         DirectoryReader indexReader = DirectoryReader.open(indexDir);
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+        Similarity similarity[] = {
+                new BM25Similarity()
+                //new ClassicSimilarity()
+        };
+        indexSearcher.setSimilarity(new MultiSimilarity(similarity));
         String fields[] = {"Title", "Abstract"};
-        //Analyzer analyzer = new Analyzer(getStopWordSet());
-        EnglishAnalyzer analyzer = new EnglishAnalyzer(getStopWordSet());
+        Analyzer analyzer = new Analyzer(getStopWordSet());
+        //StandardAnalyzer analyzer = new StandardAnalyzer(getStopWordSet());
+        //EnglishAnalyzer analyzer = new EnglishAnalyzer(getStopWordSet());
         QueryParser queryParser = new MultiFieldQueryParser(fields, analyzer);
         String queryString = QueryParser.escape(cranQuery);
         Query query = queryParser.parse(queryString);
